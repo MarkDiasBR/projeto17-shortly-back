@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import chalk from 'chalk';
 import connectToDatabase from './database/databaseConnection.js';
-// import router from './routes/index.routes.js'
+import router from './routes/index.routes.js'
 
 const app = express();
 app.use(json());
@@ -12,7 +12,7 @@ dotenv.config();
 
 export const db = await connectToDatabase();
 
-// app.use(router);
+app.use(router);
 
 const PORT = 5000;
 app.listen(process.env.PORT, () => {
