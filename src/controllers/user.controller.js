@@ -4,7 +4,6 @@ import { v4 as uuid } from 'uuid';
 
 export async function signup(req, res) {
     const { name, email, password, confirmPassword } = req.body;
-    console.log("req.body:", req.body)
 
     //password encryption
     const hash = bcrypt.hashSync(password, 10);
@@ -18,26 +17,12 @@ export async function signup(req, res) {
 
         return res.status(201).send('✅ User created SUCESSFULLY!');
     } catch (err) {
-        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
-        console.error(err)
+        return res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
-/*     return;
-    return res.status(201).send('✅ User created SUCESSFULLY!');
-    
-    const { name, email, password, confirmPassword } = req.body;
-
-    try {
-        const hash = bcrypt.hashSync(password, 10);
-
-        await db.query('users').insertOne({ name, email, password: hash });
-        res.status(201).send('✅ User created SUCESSFULLY!');
-    } catch (err) {
-        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
-    } */
 }
 
-/* export async function signin(req, res) {
-    const {}
+export async function signin(req, res) {
+    // const {}
 
     // const user = res.locals.user;
 
@@ -48,4 +33,4 @@ export async function signup(req, res) {
     } catch (err) {
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
-} */
+}
