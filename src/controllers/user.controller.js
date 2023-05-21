@@ -53,3 +53,23 @@ export async function getUrlById(req, res){
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
 }
+
+export async function searchAndIncrement(req, res, next) {
+    const { id } = req.params;
+
+    try {
+        const promise = await db.query(`
+            UPDATE shortly.links
+            SET "visitCount" = "visitCount" + 1
+            WHERE id = $1;
+        `, [id]);
+
+        if (promise.rowCount === 0) {
+            return res.status(404).send(`🚫 Link doesn't exist!`);
+        }
+
+        return res.sendStatus(200);
+    } catch (err) {
+        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
+    }
+}
