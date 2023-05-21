@@ -87,3 +87,24 @@ export async function redirectTraffic(req, res) {
     const { shortUrl } = req.params;
     res.redirect(`/urls/open/${shortUrl}`);
 }
+
+export async function getRanking(req, res) {
+    try {
+        const promise = await db.query(`
+            SELECT 
+                shortly.users.id AS id,
+                shortly.users.name,
+                COUNT (shortly.links."userId") AS "linksCount",
+                SUM (shortly.links."visitCount") AS "visitCount"
+            FROM shortly.users
+            JOIN shortly.links ON shortly.links."userId"=shortly.users.id
+            GROUP BY shortly.users.id
+            ORDER BY "visitCount" DESC
+            LIMIT 10;
+        `)
+
+        res.send(promise.rows);
+    } catch (err) {
+        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
+    }
+}

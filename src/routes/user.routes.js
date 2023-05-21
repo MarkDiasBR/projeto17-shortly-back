@@ -3,7 +3,7 @@ import { schemaValidation } from '../middlewares/schemaValidation.middleware.js'
 import { signupSchema, signinSchema } from '../schemas/user.schemas.js';
 import signupConflictValidation from '../middlewares/signup.middleware.js';
 import signinValidation from '../middlewares/signin.middleware.js';
-import { signup, signin, getUrlById, searchIncrementRedirect, redirectTraffic } from '../controllers/user.controller.js';
+import { signup, signin, getUrlById, searchIncrementRedirect, redirectTraffic, getRanking } from '../controllers/user.controller.js';
 
 
 
@@ -15,6 +15,6 @@ userRouter.post('/signin', schemaValidation(signinSchema), signinValidation, sig
 userRouter.get('/urls/:id', getUrlById);
 userRouter.get('/urls/open/:shorturl', searchIncrementRedirect, );
 userRouter.get('/u/:shortUrl', redirectTraffic);
-userRouter.get('/ranking');
+userRouter.get('/ranking', getRanking);
 
 export default userRouter;
