@@ -54,7 +54,7 @@ export async function getUrlById(req, res){
     }
 }
 
-export async function searchIncrementRedirect(req, res, next) {
+export async function searchIncrementRedirect(req, res) {
     const { shorturl } = req.params;
 
     try {
@@ -81,4 +81,9 @@ export async function searchIncrementRedirect(req, res, next) {
     } catch (err) {
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
+}
+
+export async function redirectTraffic(req, res) {
+    const { shortUrl } = req.params;
+    res.redirect(`/urls/open/${shortUrl}`);
 }
