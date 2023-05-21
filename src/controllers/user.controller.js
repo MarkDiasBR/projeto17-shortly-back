@@ -4,10 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 export async function signup(req, res) {
     const { name, email, password, confirmPassword } = req.body;
-
-    //password encryption
     const hash = bcrypt.hashSync(password, 10);
-
 
     try {
         await db.query(`
@@ -26,13 +23,32 @@ export async function signin(req, res) {
 
     try {
         const token = uuid();
-        // await db.collection('sessions').insertOne({ token, userId: user._id })
+
         await db.query(`
             INSERT
             INTO shortly.sessions ("userId", token)
             VALUES ($1, $2);
         `, [user.id, token])
         return res.send({ name: user.name, token });
+    } catch (err) {
+        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
+    }
+}
+
+export async function getUrlById(req, res){
+    const { id } = req.params;
+
+    try {
+        const promise = await db.query(`
+            SELECT id, "shortUrl", url
+            FROM shortly.links
+            WHERE id=$1
+            LIMIT 1;
+        `, [id])
+
+        if (promise.rowCount === 0) return res.status(404).send(`🚫 Link doesn't exist!`);
+
+        return res.send(promise.rows[0]);
     } catch (err) {
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
