@@ -8,6 +8,7 @@ export default async function signupConflictValidation(req, res, next) {
             SELECT * 
             FROM shortly.users
             WHERE email=$1
+            LIMIT 1;
         `, [email]);
         if (promise.rowCount !== 0) {
             return res.status(409).send('🚫 E-mail already registered!');

@@ -7,14 +7,14 @@ export default async function signinValidation(req, res, next) {
     let user;
 
     try {
-        // user = await db.collection('users').findOne({ email: email });
         const promise = await db.query(`
             SELECT * 
             FROM shortly.users 
             WHERE email=$1
+            LIMIT 1;
         `, [email]);
 
-        if (promise.rowCount === 0) return res.status(404).send('🚫 E-mail is not registered!');  
+        if (promise.rowCount === 0) return res.status(401).send('🚫 E-mail is not registered!');  
         
         user = promise.rows[0];
     } catch (err) {
@@ -25,6 +25,7 @@ export default async function signinValidation(req, res, next) {
     if (!isPasswordCorrect) return res.status(401).send('🚫 Password is incorrect!');
 
     delete user.password;
+    delete user.name;
     res.locals.user = user;
 
     next();

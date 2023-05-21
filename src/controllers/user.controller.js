@@ -22,14 +22,17 @@ export async function signup(req, res) {
 }
 
 export async function signin(req, res) {
-    // const {}
-
-    // const user = res.locals.user;
+    const user = res.locals.user;
 
     try {
-        const token = uuid()
-        await db.collection('sessions').insertOne({ token, userId: user._id })
-        res.send({ name: user.name, token });
+        const token = uuid();
+        // await db.collection('sessions').insertOne({ token, userId: user._id })
+        await db.query(`
+            INSERT
+            INTO shortly.sessions ("userId", token)
+            VALUES ($1, $2);
+        `, [user.id, token])
+        return res.send({ name: user.name, token });
     } catch (err) {
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
