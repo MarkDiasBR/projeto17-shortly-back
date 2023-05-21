@@ -54,7 +54,7 @@ export async function getUrlById(req, res){
     }
 }
 
-export async function searchAndIncrement(req, res, next) {
+export async function searchIncrementRedirect(req, res, next) {
     const { shorturl } = req.params;
 
     try {
@@ -68,7 +68,16 @@ export async function searchAndIncrement(req, res, next) {
             return res.status(404).send(`🚫 Link doesn't exist!`);
         }
 
-        return res.sendStatus(200);
+        const promise2 = await db.query(`
+            SELECT url
+            FROM shortly.links
+            WHERE "shortUrl" = $1
+            LIMIT 1;
+        `, [shorturl]);
+
+        const { url } = promise2.rows[0];
+        
+        return res.redirect(url);
     } catch (err) {
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
