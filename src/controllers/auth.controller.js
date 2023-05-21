@@ -41,3 +41,7 @@ export async function shortenUrl(req, res) {
 
     res.status(201).send(response);
 }
+
+export async function deleteLink(req, res) {
+    
+}
