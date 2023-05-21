@@ -55,14 +55,14 @@ export async function getUrlById(req, res){
 }
 
 export async function searchAndIncrement(req, res, next) {
-    const { id } = req.params;
+    const { shorturl } = req.params;
 
     try {
         const promise = await db.query(`
             UPDATE shortly.links
             SET "visitCount" = "visitCount" + 1
-            WHERE id = $1;
-        `, [id]);
+            WHERE "shortUrl" = $1;
+        `, [shorturl]);
 
         if (promise.rowCount === 0) {
             return res.status(404).send(`🚫 Link doesn't exist!`);

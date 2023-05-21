@@ -13,7 +13,7 @@ const userRouter = Router();
 userRouter.post('/signup', schemaValidation(signupSchema), signupConflictValidation, signup);
 userRouter.post('/signin', schemaValidation(signinSchema), signinValidation, signin);
 userRouter.get('/urls/:id', getUrlById);
-userRouter.get('/urls/open/:id', searchAndIncrement);
+userRouter.get('/urls/open/:shorturl', searchAndIncrement);
 userRouter.get('/ranking');
 
 export default userRouter;
