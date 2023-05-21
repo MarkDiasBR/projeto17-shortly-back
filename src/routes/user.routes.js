@@ -5,9 +5,6 @@ import signupConflictValidation from '../middlewares/signup.middleware.js';
 import signinValidation from '../middlewares/signin.middleware.js';
 import { signup, signin, getUrlById, searchIncrementRedirect, redirectTraffic, getRanking } from '../controllers/user.controller.js';
 
-
-
-
 const userRouter = Router();
 
 userRouter.post('/signup', schemaValidation(signupSchema), signupConflictValidation, signup);
