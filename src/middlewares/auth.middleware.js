@@ -13,7 +13,7 @@ export async function authValidation(req, res, next) {
             SELECT *
             FROM shortly.sessions
             WHERE token = $1;
-        `, [token])
+        `, [token]);        
 
         if (session.rowCount===0) return res.status(401).send('🚫 Access denied!');
 

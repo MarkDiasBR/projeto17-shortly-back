@@ -43,5 +43,23 @@ export async function shortenUrl(req, res) {
 }
 
 export async function deleteLink(req, res) {
-    
+    const { id: shortUrl } = req.params;
+
+    const urlSearch = await db.query(`
+        SELECT *
+        FROM shortly.links
+        WHERE "shortUrl"=$1;
+    `, [shortUrl]);
+
+    if (urlSearch.rowCount===0) return res.status(404).send(`🚫 Link doesn't exist!`);
+
+    const urlDelete = await db.query(`
+        DELETE
+        FROM shortly.links
+        WHERE "shortUrl"=$1 AND "userId"=$2;
+    `, [shortUrl, res.locals.session.userId]);
+
+    if (urlDelete.rowCount===0) return res.status(401).send(`🚫 Link doesn't belong to you!`);
+
+    return res.status(204);
 }
