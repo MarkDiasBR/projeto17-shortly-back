@@ -15,7 +15,9 @@ export async function authValidation(req, res, next) {
             WHERE token = $1;
         `, [token]);        
 
-        if (session.rowCount===0) return res.status(401).send('🚫 Access denied!');
+        if (session.rowCount===0) {
+            return res.status(401).send('🚫 Access denied!');
+        }
 
         res.locals.session = session.rows[0];
     } catch (err) {

@@ -84,5 +84,17 @@ export async function getUser(req, res) {
         GROUP BY u.id;
     `, [userId])
 
-    console.log(resume.rows[0])
+    res.send(resume.rows[0])
+}
+
+export async function getUserData(req, res) {
+    const { userId } = res.locals.session;
+
+    const userDataRequisition = await db.query(`
+        SELECT *
+        FROM shortly.users AS u
+        WHERE u.id=$1;
+    `, [userId])
+
+    res.send(userDataRequisition.rows[0])
 }
