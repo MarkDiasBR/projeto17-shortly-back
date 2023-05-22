@@ -63,3 +63,26 @@ export async function deleteLink(req, res) {
 
     return res.status(204);
 }
+
+export async function getUser(req, res) {
+    const { userId } = res.locals.session;
+
+    const resume = await db.query(`
+        SELECT
+            u.id AS id,
+            u.name AS name,
+            SUM(l."visitCount") AS "visitCount",
+            json_agg(json_build_object(
+            'id', l.id,
+            'shortUrl', l."shortUrl",
+            'url', l.url,
+            'visitCount', l."visitCount"
+            )) AS "shortenedUrls"
+        FROM shortly.users AS u
+        JOIN shortly.links AS l ON u.id = l."userId"
+        WHERE u.id=$1
+        GROUP BY u.id;
+    `, [userId])
+
+    console.log(resume.rows[0])
+}
