@@ -43,22 +43,23 @@ export async function shortenUrl(req, res) {
 }
 
 export async function deleteLink(req, res) {
-    const { id: shortUrl } = req.params;
+    const { id } = req.params;
 
     const urlSearch = await db.query(`
         SELECT *
         FROM shortly.links
-        WHERE "shortUrl"=$1;
-    `, [shortUrl]);
+        WHERE "id"=$1;
+    `, [id]);
 
+    
     if (urlSearch.rowCount===0) return res.status(404).send(`🚫 Link doesn't exist!`);
 
     const urlDelete = await db.query(`
         DELETE
         FROM shortly.links
-        WHERE "shortUrl"=$1 AND "userId"=$2;
-    `, [shortUrl, res.locals.session.userId]);
-
+        WHERE "id"=$1 AND "userId"=$2;
+    `, [id, res.locals.session.userId]);
+    
     if (urlDelete.rowCount===0) return res.status(401).send(`🚫 Link doesn't belong to you!`);
 
     return res.status(204);
@@ -77,7 +78,7 @@ export async function getUser(req, res) {
             'shortUrl', l."shortUrl",
             'url', l.url,
             'visitCount', l."visitCount"
-            )) AS "shortenedUrls"
+            )ORDER BY l."visitCount" DESC) AS "shortenedUrls"
         FROM shortly.users AS u
         JOIN shortly.links AS l ON u.id = l."userId"
         WHERE u.id=$1

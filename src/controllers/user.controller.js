@@ -84,6 +84,7 @@ export async function searchIncrementRedirect(req, res) {
 }
 
 export async function redirectTraffic(req, res) {
+   
     const { shortUrl } = req.params;
     res.redirect(`/urls/open/${shortUrl}`);
 }
