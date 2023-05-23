@@ -1,7 +1,6 @@
 import chalk from 'chalk';
 import pg from "pg";
 import dotenv from "dotenv";
-
 dotenv.config();
 
 export default async function connectToDatabase() {
@@ -12,6 +11,8 @@ export default async function connectToDatabase() {
         max: 120, 
         connectionString: process.env.DATABASE_URL
     };
+
+    if (process.env.MODE === "prod") configDatabase.ssl = true;
 
     let db = new Pool(configDatabase);
 
