@@ -52,7 +52,7 @@ export async function deleteLink(req, res) {
             WHERE "id"=$1;
         `, [id]);
         
-        if (urlSearch.rowCount===0) return res.status(404).send("🚫 Link doesn't exist!");
+        if (urlSearch.rowCount===0) return res.status(404).send("🚫 Link doesnt exist!");
 
         const urlDelete = await db.query(`
             DELETE
@@ -60,7 +60,7 @@ export async function deleteLink(req, res) {
             WHERE "id"=$1;
         `, [id, res.locals.session.userId]);
 
-        if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesn't belong to you!");
+        if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesnt belong to you!");
 
         res.sendStatus(204);
     } catch (err) {

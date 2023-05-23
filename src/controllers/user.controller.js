@@ -78,7 +78,7 @@ export async function searchIncrementRedirect(req, res) {
 
         const { url } = promise2.rows[0];
 
-        res.status(302).send({ url });
+        res.send({ url });
         return; 
     } catch (err) {
         console.log("dentro bk")

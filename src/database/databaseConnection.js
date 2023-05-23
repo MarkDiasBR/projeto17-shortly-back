@@ -8,12 +8,11 @@ export default async function connectToDatabase() {
     const { Pool } = pg;
 
     const configDatabase = {   
-        max: 120, 
+        max: 120,
         connectionString: process.env.DATABASE_URL
     };
 
-    // if (process.env.MODE === "prod") configDatabase.ssl = true;
-    configDatabase.ssl = true;
+    if (process.env.MODE === "prod") configDatabase.ssl = true;
 
     let db = new Pool(configDatabase);
 
