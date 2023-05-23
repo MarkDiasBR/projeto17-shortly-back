@@ -57,8 +57,8 @@ export async function deleteLink(req, res) {
         const urlDelete = await db.query(`
             DELETE
             FROM public.links
-            WHERE "id"=$1;
-        `, [id]);
+            WHERE "id"=$1 AND "userId"=$2;
+        `, [id, res.locals.session.userId]);
 
         //, res.locals.session.userId
 
