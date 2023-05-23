@@ -8,7 +8,7 @@ export async function signup(req, res) {
 
     try {
         await db.query(`
-            INSERT INTO shortly.users (name, email, password) 
+            INSERT INTO public.users (name, email, password) 
             VALUES ($1, $2, $3)
         `, [name, email, hash]);
 
@@ -26,7 +26,7 @@ export async function signin(req, res) {
 
         await db.query(`
             INSERT
-            INTO shortly.sessions ("userId", token)
+            INTO public.sessions ("userId", token)
             VALUES ($1, $2);
         `, [user.id, token])
         return res.send({ name: user.name, token });
@@ -41,7 +41,7 @@ export async function getUrlById(req, res){
     try {
         const promise = await db.query(`
             SELECT id, "shortUrl", url
-            FROM shortly.links
+            FROM public.links
             WHERE id=$1
             LIMIT 1;
         `, [id])
@@ -58,8 +58,9 @@ export async function searchIncrementRedirect(req, res) {
     const { shorturl } = req.params;
 
     try {
+
         const promise = await db.query(`
-            UPDATE shortly.links
+            UPDATE public.links
             SET "visitCount" = "visitCount" + 1
             WHERE "shortUrl" = $1;
         `, [shorturl]);
@@ -70,21 +71,22 @@ export async function searchIncrementRedirect(req, res) {
 
         const promise2 = await db.query(`
             SELECT url
-            FROM shortly.links
+            FROM public.links
             WHERE "shortUrl" = $1
             LIMIT 1;
         `, [shorturl]);
 
         const { url } = promise2.rows[0];
-        
-        return res.redirect(url);
+
+        res.send({ url });
+        return; 
     } catch (err) {
+        console.log("dentro bk")
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
 }
 
 export async function redirectTraffic(req, res) {
-   
     const { shortUrl } = req.params;
     res.redirect(`/urls/open/${shortUrl}`);
 }
@@ -93,16 +95,16 @@ export async function getRanking(req, res) {
     try {
         const promise = await db.query(`
             SELECT 
-                shortly.users.id AS id,
-                shortly.users.name,
-                COUNT (shortly.links."userId") AS "linksCount",
-                SUM (shortly.links."visitCount") AS "visitCount"
-            FROM shortly.users
-            JOIN shortly.links ON shortly.links."userId"=shortly.users.id
-            GROUP BY shortly.users.id
-            ORDER BY "visitCount" DESC
+                public.users.id AS id,
+                public.users.name,
+                COUNT (public.links."userId") AS "linksCount",
+                COALESCE(SUM (public.links."visitCount"), 0) AS "visitCount"
+            FROM public.users
+            LEFT JOIN public.links ON public.links."userId"=public.users.id
+            GROUP BY public.users.id
+            ORDER BY "visitCount" DESC, "linksCount" DESC
             LIMIT 10;
-        `)
+        `);
 
         res.send(promise.rows);
     } catch (err) {

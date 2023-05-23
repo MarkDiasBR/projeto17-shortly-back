@@ -8,8 +8,9 @@ export default async function connectToDatabase() {
 
     const { Pool } = pg;
 
-    const configDatabase = {
-    connectionString: process.env.DATABASE_URL,
+    const configDatabase = {   
+        max: 120, 
+        connectionString: process.env.DATABASE_URL
     };
 
     let db = new Pool(configDatabase);

@@ -19,13 +19,13 @@ export async function shortenUrl(req, res) {
     try {
         const promise = await db.query(`
             INSERT
-            INTO shortly.links (url, "shortUrl", "userId", "visitCount")
+            INTO public.links (url, "shortUrl", "userId", "visitCount")
             VALUES ($1, $2, $3, 0)
         `, [url, shortUrl, userId])
 
         const result = await db.query(`
             SELECT id
-            FROM shortly.links
+            FROM public.links
             WHERE "shortUrl" = $1
         `, [shortUrl])
 
@@ -45,24 +45,30 @@ export async function shortenUrl(req, res) {
 export async function deleteLink(req, res) {
     const { id } = req.params;
 
-    const urlSearch = await db.query(`
-        SELECT *
-        FROM shortly.links
-        WHERE "id"=$1;
-    `, [id]);
+    try {
+        const urlSearch = await db.query(`
+            SELECT *
+            FROM public.links
+            WHERE "id"=$1;
+        `, [id]);
+        
+        if (urlSearch.rowCount===0) return res.status(404).send("🚫 Link doesnt exist!");
 
-    
-    if (urlSearch.rowCount===0) return res.status(404).send(`🚫 Link doesn't exist!`);
+        const urlDelete = await db.query(`
+            DELETE
+            FROM public.links
+            WHERE "id"=$1;
+        `, [id]);
+        
+        // , res.locals.session.userId
 
-    const urlDelete = await db.query(`
-        DELETE
-        FROM shortly.links
-        WHERE "id"=$1 AND "userId"=$2;
-    `, [id, res.locals.session.userId]);
-    
-    if (urlDelete.rowCount===0) return res.status(401).send(`🚫 Link doesn't belong to you!`);
+        if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesnt belong to you!");
 
-    return res.status(204);
+        res.sendStatus(204);
+    } catch (err) {
+        // res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
+        res.status(500).send(err);
+    }
 }
 
 export async function getUser(req, res) {
@@ -74,13 +80,13 @@ export async function getUser(req, res) {
             u.name AS name,
             SUM(l."visitCount") AS "visitCount",
             json_agg(json_build_object(
-            'id', l.id,
-            'shortUrl', l."shortUrl",
-            'url', l.url,
-            'visitCount', l."visitCount"
-            )ORDER BY l."visitCount" DESC) AS "shortenedUrls"
-        FROM shortly.users AS u
-        JOIN shortly.links AS l ON u.id = l."userId"
+                'id', l.id,
+                'shortUrl', l."shortUrl",
+                'url', l.url,
+                'visitCount', l."visitCount"
+            )ORDER BY l."visitCount" DESC, l.id ASC) AS "shortenedUrls"
+        FROM public.users AS u
+        JOIN public.links AS l ON u.id = l."userId"
         WHERE u.id=$1
         GROUP BY u.id;
     `, [userId])
@@ -89,13 +95,35 @@ export async function getUser(req, res) {
 }
 
 export async function getUserData(req, res) {
-    const { userId } = res.locals.session;
+    try {
+        const { userId } = res.locals.session;
+    
+        const userDataRequisition = await db.query(`
+            SELECT *
+            FROM public.users AS u
+            WHERE u.id=$1;
+        `, [userId]);
+    
+        const userData = userDataRequisition.rows[0];
+        res.send(userData);
+    } catch (error) {
+        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
+    }
+}
 
-    const userDataRequisition = await db.query(`
-        SELECT *
-        FROM shortly.users AS u
-        WHERE u.id=$1;
-    `, [userId])
-
-    res.send(userDataRequisition.rows[0])
+export async function getUserName(req, res) {
+    try {
+        const { userId } = res.locals.session;
+    
+        const userDataRequisition = await db.query(`
+            SELECT name
+            FROM public.users AS u
+            WHERE u.id=$1;
+        `, [userId]);
+    
+        const userData = userDataRequisition.rows[0];
+        res.send(userData);
+    } catch (error) {
+        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
+    }
 }

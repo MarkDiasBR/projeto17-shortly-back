@@ -4,11 +4,11 @@ import dotenv from 'dotenv';
 import chalk from 'chalk';
 import connectToDatabase from './database/databaseConnection.js';
 import router from './routes/index.routes.js'
+dotenv.config();
 
 const app = express();
 app.use(json());
 app.use(cors());
-dotenv.config();
 
 export const db = await connectToDatabase();
 

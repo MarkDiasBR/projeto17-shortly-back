@@ -11,7 +11,7 @@ export async function authValidation(req, res, next) {
     try {
         const session = await db.query(`
             SELECT *
-            FROM shortly.sessions
+            FROM public.sessions
             WHERE token = $1;
         `, [token]);        
 

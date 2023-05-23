@@ -9,7 +9,7 @@ export default async function signinValidation(req, res, next) {
     try {
         const promise = await db.query(`
             SELECT * 
-            FROM shortly.users 
+            FROM public.users 
             WHERE email=$1
             LIMIT 1;
         `, [email]);
