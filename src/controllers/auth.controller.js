@@ -52,22 +52,19 @@ export async function deleteLink(req, res) {
             WHERE "id"=$1;
         `, [id]);
         
-        if (urlSearch.rowCount===0) return res.status(404).send("🚫 Link doesnt exist!");
+        if (urlSearch.rowCount===0) return res.status(404).send("🚫 Link doesn't exist!");
 
         const urlDelete = await db.query(`
             DELETE
             FROM public.links
             WHERE "id"=$1;
-        `, [id]);
-        
-        // , res.locals.session.userId
+        `, [id, res.locals.session.userId]);
 
-        if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesnt belong to you!");
+        if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesn't belong to you!");
 
         res.sendStatus(204);
     } catch (err) {
-        // res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
-        res.status(500).send(err);
+        res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
     }
 }
 

@@ -12,7 +12,8 @@ export default async function connectToDatabase() {
         connectionString: process.env.DATABASE_URL
     };
 
-    if (process.env.MODE === "prod") configDatabase.ssl = true;
+    // if (process.env.MODE === "prod") configDatabase.ssl = true;
+    configDatabase.ssl = true;
 
     let db = new Pool(configDatabase);
 
