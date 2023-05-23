@@ -58,7 +58,9 @@ export async function deleteLink(req, res) {
             DELETE
             FROM public.links
             WHERE "id"=$1;
-        `, [id, res.locals.session.userId]);
+        `, [id]);
+
+        //, res.locals.session.userId
 
         if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesnt belong to you!");
 
