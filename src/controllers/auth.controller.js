@@ -60,8 +60,6 @@ export async function deleteLink(req, res) {
             WHERE "id"=$1 AND "userId"=$2;
         `, [id, res.locals.session.userId]);
 
-        //, res.locals.session.userId
-
         if (urlDelete.rowCount===0) return res.status(401).send("🚫 Link doesnt belong to you!");
 
         res.sendStatus(204);

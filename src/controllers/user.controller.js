@@ -78,8 +78,9 @@ export async function searchIncrementRedirect(req, res) {
 
         const { url } = promise2.rows[0];
 
-        res.send({ url });
-        return; 
+        // res.send({ url });
+        // return; 
+        res.redirect(`${url}`)
     } catch (err) {
         console.log("dentro bk")
         res.status(500).send(`🚫 Unexpected server error!\n\n${err.message}`);
